@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>계산기</title>
+    <link rel="stylesheet" href="calculator_gg.css" />
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a class="brand" href="index.html" aria-label="Kingshot 홈">Kingshot<span>+</span></a>
+      <button class="nav-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links">
+        <a href="calculator_gg.html">지고 계산기</a>
+        <a href="calculator_departure.html">출발 계산기</a>
+        <a href="calculator_server_prep.html">서버준비전</a>
+        <a href="calculator_alliance_duel.html">연맹결투</a>
+        <a href="calculator_free.html">자유계산기</a>
+      </div>
+    </nav>
+    <main class="page">
+      <h1>지고의 영주 점수 계산기</h1>
+      <p class="intro">
+        현재 점수와 보유 아이템 수량을 입력하면 예상 총점을 바로 계산합니다.
+      </p>
+
+      <section class="calculator" aria-label="지고 점수 계산기">
+        <header class="score-header">
+          <div class="score-inputs">
+            <label>
+              <span class="score-label">현재 점수</span>
+              <input
+                class="current-score"
+                id="currentScore"
+                type="text"
+                inputmode="numeric"
+                value="0"
+              />
+            </label>
+            <label>
+              <span class="score-label">경쟁자 점수</span>
+              <input
+                class="current-score"
+                id="competitorScore"
+                type="text"
+                inputmode="numeric"
+                value="0"
+              />
+            </label>
+          </div>
+          <div class="result" aria-live="polite">
+            <span class="result-label">예상 총점</span>
+            <strong class="total" id="totalScore">0</strong>
+            <span class="comparison" id="comparison">경쟁자와 동점입니다.</span>
+          </div>
+        </header>
+
+        <div class="view-controls">
+          <button class="view-toggle active" id="showAllButton" type="button">
+            전체 보기
+          </button>
+          <button class="view-toggle" id="showSelectedButton" type="button">
+            체크 항목만 보기
+          </button>
+          <button class="reset" id="resetButton" type="button">초기화</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">아이템</th>
+                <th scope="col">포인트</th>
+                <th scope="col">개수</th>
+                <th scope="col">추가 점수</th>
+                <th scope="col">누적 점수</th>
+              </tr>
+            </thead>
+            <tbody id="scoreRows"></tbody>
+          </table>
+        </div>
+
+        <footer class="footer">
+          <p>입력값은 브라우저에 자동으로 저장됩니다.</p>
+        </footer>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>1서버 미소의세상</span>
+      <i>·</i>
+      <strong>KINGSHOT</strong>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script>
+      const GEM_MULTIPLIERS = [
+        0, 625, 1250, 3125, 8750, 11250, 12500, 12500, 13000, 14000, 15000,
+        16000,
+      ];
+      const TRAINING_POINTS = [0, 1, 2, 3, 5, 7, 11, 16, 23, 30, 39, 49];
+      const EQUIPMENT_OPTIONS = [
+        { name: "고급", score: 1125 },
+        { name: "고급 (1성)", score: 1875 },
+        { name: "레어", score: 3000 },
+        { name: "레어 (1성)", score: 4500 },
+        { name: "레어 (2성)", score: 5100 },
+        { name: "레어 (3성)", score: 5440 },
+        { name: "에픽", score: 3230 },
+        { name: "에픽 (1성)", score: 3230 },
+        { name: "에픽 (2성)", score: 3225 },
+        { name: "에픽 (3성)", score: 3225 },
+        { name: "에픽 T1", score: 3440 },
+        { name: "에픽 T1 (1성)", score: 3440 },
+        { name: "에픽 T1 (2성)", score: 4085 },
+        { name: "에픽 T1 (3성)", score: 4085 },
+        { name: "레전드", score: 6250 },
+        { name: "레전드 (1성)", score: 6250 },
+        { name: "레전드 (2성)", score: 6250 },
+        { name: "레전드 (3성)", score: 6250 },
+        { name: "레전드 T1", score: 6250 },
+        { name: "레전드 T1 (1성)", score: 6250 },
+        { name: "레전드 T1 (2성)", score: 6250 },
+        { name: "레전드 T1 (3성)", score: 6250 },
+      ];
+      const PET_BREAKTHROUGH_OPTIONS = [
+        { name: "10돌파", score: 500 },
+        { name: "20돌파", score: 1000 },
+        { name: "30돌파", score: 2000 },
+        { name: "40돌파", score: 3000 },
+        { name: "50돌파", score: 4500 },
+        { name: "60돌파", score: 6750 },
+        { name: "70돌파", score: 10000 },
+        { name: "80돌파", score: 12000 },
+        { name: "90돌파", score: 14500 },
+        { name: "100돌파", score: 17500 },
+      ];
+      const DEFAULT_SCORE = 0;
+      const STORAGE_KEY = "kingshot-jigo-score-v2";
+      const items = [
+        { id: "pureGold", name: "순금", point: 2000 },
+        { id: "goldPiece", name: "순금조각", point: 1000 },
+        { id: "tempering", name: "담금질 된 순금", point: 30000 },
+        { id: "gem", name: "보석", point: 70, isGem: true },
+        { id: "speedup", name: "가속", point: 30, isTime: true },
+        { id: "equipment", name: "장비", point: 36, isEquipment: true },
+        {
+          id: "masterBadge",
+          name: "거장배지",
+          point: 6000,
+          note: "공용 포함되지 않음",
+        },
+        { id: "masterManuscript", name: "거장의 원고", point: 60 },
+        { id: "roulette", name: "룰렛", point: 8000 },
+        { id: "rareShard", name: "레어파편", point: 350 },
+        { id: "purpleShard", name: "보라파편", point: 1220 },
+        { id: "yellowShard", name: "노랑파편", point: 3040 },
+        { id: "hammer", name: "망치", point: 4000 },
+        { id: "component", name: "부속품", point: 8000 },
+        { id: "mithril", name: "미스릴", point: 40000 },
+        { id: "advancedTraining", name: "펫 고급훈련", point: 15000 },
+        { id: "normalTraining", name: "펫 일반훈련", point: 1150 },
+        { id: "petBreakthrough", name: "펫 돌파", isPetBreakthrough: true },
+        { id: "soldierTraining", name: "병사 훈련", isSoldier: true },
+        { id: "other", name: "기타", isCustom: true },
+      ];
+
+      const rows = document.querySelector("#scoreRows");
+      const currentScore = document.querySelector("#currentScore");
+      const competitorScore = document.querySelector("#competitorScore");
+      const totalScore = document.querySelector("#totalScore");
+      const comparison = document.querySelector("#comparison");
+      const resetButton = document.querySelector("#resetButton");
+      const showAllButton = document.querySelector("#showAllButton");
+      const showSelectedButton = document.querySelector("#showSelectedButton");
+      const numberFormat = new Intl.NumberFormat("ko-KR");
+      let showSelectedOnly = false;
+
+      function parseNumeric(value) {
+        return Math.max(0, Number(String(value).replace(/[^0-9]/g, "")) || 0);
+      }
+
+      function formatNumeric(value) {
+        return numberFormat.format(parseNumeric(value));
+      }
+
+      const stepperSelector =
+        ".qty-input, .gem-count-input, .time-input, .soldier-count-input, .equipment-count-input, .pet-breakthrough-count-input";
+
+      function enhanceNumericControls() {
+        document.querySelectorAll(stepperSelector).forEach((input) => {
+          if (input.parentElement.classList.contains("numeric-control")) return;
+
+          const wrapper = document.createElement("span");
+          wrapper.className = "numeric-control";
+          input.parentNode.insertBefore(wrapper, input);
+          wrapper.appendChild(input);
+          wrapper.insertAdjacentHTML(
+            "beforeend",
+            '<span class="stepper-buttons"><button data-step="1" type="button" aria-label="1 증가">▲</button><button data-step="-1" type="button" aria-label="1 감소">▼</button></span>',
+          );
+        });
+      }
+
+      function getSavedState() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch {
+          return {};
+        }
+      }
+
+      function makeGemEntry(entry, index) {
+        const options = GEM_MULTIPLIERS.map(
+          (_, level) =>
+            `<option value="${level}" ${level === entry.level ? "selected" : ""}>레벨 ${level}</option>`,
+        ).join("");
+        return `
+          <div class="gem-entry">
+            ${index > 0 ? '<button class="entry-remove" data-remove-gem type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <select class="gem-select" data-gem-level aria-label="보석 레벨">${options}</select>
+            <label><input class="gem-count-input" data-gem-count aria-label="보석 개수" type="text" inputmode="numeric" value="${formatNumeric(entry.count)}"></label>
+          </div>
+        `;
+      }
+
+      function makeTimeEntry(entry, index) {
+        const hours = Math.floor(entry.minutes / 60);
+        const minutes = entry.minutes % 60;
+        return `
+          <div class="time-entry">
+            ${index > 0 ? '<button class="entry-remove" data-remove-time type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <label><input class="time-input" data-hour aria-label="가속 시간" type="text" inputmode="numeric" value="${formatNumeric(hours)}"><span>시간</span></label>
+            <label><input class="time-input" data-minute aria-label="가속 분" type="text" inputmode="numeric" value="${formatNumeric(minutes)}"><span>분</span></label>
+          </div>
+        `;
+      }
+
+      function makeSoldierEntry(entry, index) {
+        const options = TRAINING_POINTS.slice(1)
+          .map((_, offset) => {
+            const tier = offset + 1;
+            return `<option value="${tier}" ${tier === entry.tier ? "selected" : ""}>${tier}급</option>`;
+          })
+          .join("");
+        return `
+          <div class="soldier-entry">
+            ${index > 0 ? '<button class="entry-remove" data-remove-soldier type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <select class="soldier-select" data-soldier-tier aria-label="병사 훈련 등급">${options}</select>
+            <label><input class="soldier-count-input" data-soldier-count aria-label="병사 훈련 명수" type="text" inputmode="numeric" value="${formatNumeric(entry.count)}"><span>명</span></label>
+          </div>
+        `;
+      }
+
+      function makeEquipmentEntry(entry, index) {
+        const options = EQUIPMENT_OPTIONS.map(
+          (option, optionIndex) =>
+            `<option value="${optionIndex}" ${optionIndex === entry.option ? "selected" : ""}>${option.name}</option>`,
+        ).join("");
+        return `
+          <div class="equipment-entry">
+            ${index > 0 ? '<button class="entry-remove" data-remove-equipment type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <select class="equipment-select" data-equipment-option aria-label="장비 등급">${options}</select>
+            <label><input class="equipment-count-input" data-equipment-count aria-label="장비 개수" type="text" inputmode="numeric" value="${formatNumeric(entry.count)}"></label>
+          </div>
+        `;
+      }
+
+      function makePetBreakthroughEntry(entry, index) {
+        const options = PET_BREAKTHROUGH_OPTIONS.map(
+          (option, optionIndex) =>
+            `<option value="${optionIndex}" ${optionIndex === entry.option ? "selected" : ""}>${option.name}</option>`,
+        ).join("");
+        return `
+          <div class="pet-breakthrough-entry">
+            ${index > 0 ? '<button class="entry-remove" data-remove-pet-breakthrough type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <select class="pet-breakthrough-select" data-pet-breakthrough-option aria-label="펫 돌파 단계">${options}</select>
+            <label><input class="pet-breakthrough-count-input" data-pet-breakthrough-count aria-label="펫 돌파 개수" type="text" inputmode="numeric" value="${formatNumeric(entry.count)}"></label>
+          </div>
+          </div>
+        `;
+      }
+
+      function makeAddButton(item) {
+        if (item.isGem)
+          return '<button class="title-add" data-add-gem type="button" aria-label="보석 추가">+</button>';
+        if (item.isTime)
+          return '<button class="title-add" data-add-time type="button" aria-label="가속 추가">+</button>';
+        if (item.isSoldier)
+          return '<button class="title-add" data-add-soldier type="button" aria-label="병사 훈련 추가">+</button>';
+        if (item.isEquipment)
+          return '<button class="title-add" data-add-equipment type="button" aria-label="장비 추가">+</button>';
+        if (item.isPetBreakthrough)
+          return '<button class="title-add" data-add-pet-breakthrough type="button" aria-label="펫 돌파 추가">+</button>';
+        return "";
+      }
+
+      function makeQuantityControl(item, quantity) {
+        if (item.isGem) {
+          const entries = Array.isArray(savedState.gemEntries)
+            ? savedState.gemEntries
+            : [
+                {
+                  level: quantity,
+                  count: Math.max(
+                    0,
+                    Number(savedState[`${item.id}Count`]) || 0,
+                  ),
+                },
+              ];
+          return `
+            <div class="gem-inputs">
+              <div class="gem-entries">${entries.map(makeGemEntry).join("")}</div>
+            </div>
+          `;
+        }
+
+        if (item.isTime) {
+          const entries = Array.isArray(savedState.timeEntries)
+            ? savedState.timeEntries
+            : [{ minutes: quantity }];
+          return `
+            <div class="time-inputs">
+              ${entries.map(makeTimeEntry).join("")}
+            </div>
+          `;
+        }
+
+        if (item.isSoldier) {
+          const entries = Array.isArray(savedState.soldierEntries)
+            ? savedState.soldierEntries
+            : [{ tier: 1, count: 0 }];
+          return `<div class="soldier-inputs">${entries.map(makeSoldierEntry).join("")}</div>`;
+        }
+
+        if (item.isEquipment) {
+          const entries = Array.isArray(savedState.equipmentEntries)
+            ? savedState.equipmentEntries
+            : [{ option: 0, count: 0 }];
+          return `<div class="equipment-inputs">${entries.map(makeEquipmentEntry).join("")}</div>`;
+        }
+
+        if (item.isPetBreakthrough) {
+          const entries = Array.isArray(savedState.petBreakthroughEntries)
+            ? savedState.petBreakthroughEntries
+            : [{ option: 0, count: 0 }];
+          return `<div class="pet-breakthrough-inputs">${entries.map(makePetBreakthroughEntry).join("")}</div>`;
+        }
+
+        return `<input class="qty-input" data-id="${item.id}" aria-label="${item.name} 개수" type="text" inputmode="numeric" value="${formatNumeric(quantity)}">`;
+      }
+
+      let savedState = {};
+
+      function renderRows(state = {}) {
+        savedState = state;
+        rows.innerHTML = items
+          .map((item) => {
+            const quantity = Math.max(0, Number(state[item.id]) || 0);
+            const pointCell = item.isCustom
+              ? `<input class="custom-point-input" data-custom-point aria-label="${item.name} 포인트" type="text" inputmode="numeric" value="${formatNumeric(state.otherPoint || 0)}">`
+              : item.isSoldier || item.isPetBreakthrough
+                ? '<span class="variable-point">등급별</span>'
+                : `<span class="point">${numberFormat.format(item.point || 0)}</span>`;
+            const note = item.note
+              ? `<span class="item-note">${item.note}</span>`
+              : "";
+            const isPinned = Array.isArray(state.pinnedItems)
+              ? state.pinnedItems.includes(item.id)
+              : false;
+            return `
+          <tr data-row="${item.id}">
+            <td class="item-name">
+              <label class="item-pin">
+                <input data-pin-item="${item.id}" type="checkbox" ${isPinned ? "checked" : ""}>
+                <span>${item.name}</span>
+              </label>
+              ${makeAddButton(item)}${note}
+            </td>
+            <td>${pointCell}</td>
+            <td>${makeQuantityControl(item, quantity)}</td>
+            <td class="subtotal" data-subtotal="${item.id}">0</td>
+            <td class="subtotal" data-running="${item.id}">0</td>
+          </tr>
+        `;
+          })
+          .join("");
+        enhanceNumericControls();
+      }
+
+      function readQuantity(item) {
+        if (
+          item.isGem ||
+          item.isTime ||
+          item.isSoldier ||
+          item.isEquipment ||
+          item.isPetBreakthrough
+        ) {
+          return 0;
+        }
+
+        const id = item.id;
+        const input = document.querySelector(`[data-id="${id}"]`);
+        return Math.floor(parseNumeric(input.value));
+      }
+
+      function readGemEntries() {
+        return Array.from(document.querySelectorAll(".gem-entry")).map(
+          (entry) => ({
+            level: Math.max(
+              0,
+              Math.floor(
+                Number(entry.querySelector("[data-gem-level]").value) || 0,
+              ),
+            ),
+            count: Math.max(
+              0,
+              Math.floor(
+                parseNumeric(entry.querySelector("[data-gem-count]").value),
+              ),
+            ),
+          }),
+        );
+      }
+
+      function readTimeEntries() {
+        return Array.from(document.querySelectorAll(".time-entry")).map(
+          (entry) => ({
+            minutes:
+              Math.max(
+                0,
+                Math.floor(
+                  parseNumeric(entry.querySelector("[data-hour]").value),
+                ),
+              ) *
+                60 +
+              Math.max(
+                0,
+                Math.floor(
+                  parseNumeric(entry.querySelector("[data-minute]").value),
+                ),
+              ),
+          }),
+        );
+      }
+
+      function readSoldierEntries() {
+        return Array.from(document.querySelectorAll(".soldier-entry")).map(
+          (entry) => ({
+            tier: Math.max(
+              1,
+              Math.floor(
+                Number(entry.querySelector("[data-soldier-tier]").value) || 1,
+              ),
+            ),
+            count: Math.max(
+              0,
+              Math.floor(
+                parseNumeric(entry.querySelector("[data-soldier-count]").value),
+              ),
+            ),
+          }),
+        );
+      }
+
+      function readEquipmentEntries() {
+        return Array.from(document.querySelectorAll(".equipment-entry")).map(
+          (entry) => ({
+            option: Math.max(
+              0,
+              Math.floor(
+                Number(entry.querySelector("[data-equipment-option]").value) ||
+                  0,
+              ),
+            ),
+            count: Math.max(
+              0,
+              Math.floor(
+                parseNumeric(
+                  entry.querySelector("[data-equipment-count]").value,
+                ),
+              ),
+            ),
+          }),
+        );
+      }
+
+      function readPetBreakthroughEntries() {
+        return Array.from(
+          document.querySelectorAll(".pet-breakthrough-entry"),
+        ).map((entry) => ({
+          option: Math.max(
+            0,
+            Math.floor(
+              Number(
+                entry.querySelector("[data-pet-breakthrough-option]").value,
+              ) || 0,
+            ),
+          ),
+          count: Math.max(
+            0,
+            Math.floor(
+              parseNumeric(
+                entry.querySelector("[data-pet-breakthrough-count]").value,
+              ),
+            ),
+          ),
+        }));
+      }
+
+      function calculate() {
+        enhanceNumericControls();
+        let runningTotal = Math.max(
+          0,
+          Math.floor(parseNumeric(currentScore.value)),
+        );
+        const rivalTotal = Math.max(
+          0,
+          Math.floor(parseNumeric(competitorScore.value)),
+        );
+        const state = {
+          currentScore: runningTotal,
+          competitorScore: rivalTotal,
+          pinnedItems: Array.from(
+            document.querySelectorAll("[data-pin-item]:checked"),
+          ).map((input) => input.dataset.pinItem),
+        };
+
+        items.forEach((item) => {
+          const quantity = readQuantity(item);
+          const point = item.isCustom
+            ? Math.max(
+                0,
+                Math.floor(
+                  parseNumeric(
+                    document.querySelector("[data-custom-point]").value,
+                  ),
+                ),
+              )
+            : item.point || 0;
+          const gemEntries = item.isGem ? readGemEntries() : [];
+          const timeEntries = item.isTime ? readTimeEntries() : [];
+          const soldierEntries = item.isSoldier ? readSoldierEntries() : [];
+          const equipmentEntries = item.isEquipment
+            ? readEquipmentEntries()
+            : [];
+          const petBreakthroughEntries = item.isPetBreakthrough
+            ? readPetBreakthroughEntries()
+            : [];
+          let subtotal = point * quantity;
+          if (item.isGem) {
+            subtotal = gemEntries.reduce(
+              (sum, entry) =>
+                sum + point * GEM_MULTIPLIERS[entry.level] * entry.count,
+              0,
+            );
+          }
+          if (item.isTime) {
+            subtotal = timeEntries.reduce(
+              (sum, entry) => sum + point * entry.minutes,
+              0,
+            );
+          }
+          if (item.isSoldier) {
+            subtotal = soldierEntries.reduce(
+              (sum, entry) => sum + TRAINING_POINTS[entry.tier] * entry.count,
+              0,
+            );
+          }
+          if (item.isEquipment) {
+            subtotal = equipmentEntries.reduce(
+              (sum, entry) =>
+                sum +
+                point * EQUIPMENT_OPTIONS[entry.option].score * entry.count,
+              0,
+            );
+          }
+          if (item.isPetBreakthrough) {
+            subtotal = petBreakthroughEntries.reduce(
+              (sum, entry) =>
+                sum +
+                PET_BREAKTHROUGH_OPTIONS[entry.option].score * entry.count,
+              0,
+            );
+          }
+          runningTotal += subtotal;
+          state[item.id] = quantity;
+          if (item.isGem) {
+            state.gemEntries = gemEntries;
+          }
+          if (item.isTime) {
+            state.timeEntries = timeEntries;
+          }
+          if (item.isSoldier) {
+            state.soldierEntries = soldierEntries;
+          }
+          if (item.isEquipment) {
+            state.equipmentEntries = equipmentEntries;
+          }
+          if (item.isPetBreakthrough) {
+            state.petBreakthroughEntries = petBreakthroughEntries;
+          }
+          if (item.isCustom) {
+            state.otherPoint = point;
+          }
+          document.querySelector(`[data-subtotal="${item.id}"]`).textContent =
+            numberFormat.format(subtotal);
+          document.querySelector(`[data-running="${item.id}"]`).textContent =
+            numberFormat.format(runningTotal);
+          document.querySelector(`[data-row="${item.id}"]`).hidden =
+            showSelectedOnly && !state.pinnedItems.includes(item.id);
+        });
+
+        totalScore.textContent = numberFormat.format(runningTotal);
+        const difference = runningTotal - rivalTotal;
+        totalScore.className = `total ${difference < 0 ? "behind" : "ahead"}`;
+        comparison.className = `comparison ${difference > 0 ? "ahead" : difference < 0 ? "behind" : "tie"}`;
+        comparison.textContent =
+          difference > 0
+            ? `경쟁자보다 ${numberFormat.format(difference)}점 앞서고 있습니다.`
+            : difference < 0
+              ? `경쟁자보다 ${numberFormat.format(Math.abs(difference))}점 부족합니다.`
+              : "경쟁자와 동점입니다.";
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function initialize() {
+        const state = getSavedState();
+        currentScore.value = formatNumeric(
+          Number.isFinite(Number(state.currentScore))
+            ? state.currentScore
+            : DEFAULT_SCORE,
+        );
+        competitorScore.value = formatNumeric(
+          Number.isFinite(Number(state.competitorScore))
+            ? state.competitorScore
+            : DEFAULT_SCORE,
+        );
+        renderRows(state);
+        calculate();
+      }
+
+      document.addEventListener("input", (event) => {
+        if (
+          event.target.matches(
+            ".current-score, .qty-input, .gem-count-input, .time-input, .soldier-count-input, .equipment-count-input, .pet-breakthrough-count-input, .custom-point-input",
+          )
+        ) {
+          const rawValue = event.target.value;
+          event.target.value = rawValue === "" ? "" : formatNumeric(rawValue);
+        }
+        calculate();
+      });
+      document.addEventListener("change", calculate);
+      document.addEventListener("keydown", (event) => {
+        if (
+          event.target.matches(stepperSelector) &&
+          (event.key === "ArrowUp" || event.key === "ArrowDown")
+        ) {
+          event.preventDefault();
+          const difference = event.key === "ArrowUp" ? 1 : -1;
+          event.target.value = formatNumeric(
+            Math.max(0, parseNumeric(event.target.value) + difference),
+          );
+          calculate();
+        }
+      });
+      document.addEventListener("focusin", (event) => {
+        if (
+          event.target.matches(
+            ".current-score, .qty-input, .gem-count-input, .time-input, .soldier-count-input, .equipment-count-input, .pet-breakthrough-count-input, .custom-point-input",
+          ) &&
+          event.target.value === "0"
+        ) {
+          event.target.value = "";
+        }
+      });
+      document.addEventListener("click", (event) => {
+        if (event.target.matches("[data-step]")) {
+          const input = event.target
+            .closest(".numeric-control")
+            .querySelector("input");
+          input.value = formatNumeric(
+            Math.max(
+              0,
+              parseNumeric(input.value) + Number(event.target.dataset.step),
+            ),
+          );
+          calculate();
+        }
+
+        if (event.target.matches("[data-add-gem]")) {
+          const entries = readGemEntries();
+          entries.push({ level: 0, count: 0 });
+          savedState = { ...savedState, gemEntries: entries };
+          document.querySelector(".gem-entries").innerHTML = entries
+            .map(makeGemEntry)
+            .join("");
+          calculate();
+        }
+
+        if (event.target.matches("[data-remove-gem]")) {
+          event.target.closest(".gem-entry").remove();
+          calculate();
+        }
+
+        if (event.target.matches("[data-add-time]")) {
+          const entries = readTimeEntries();
+          entries.push({ minutes: 0 });
+          savedState = { ...savedState, timeEntries: entries };
+          document.querySelector(".time-inputs").innerHTML = entries
+            .map(makeTimeEntry)
+            .join("");
+          calculate();
+        }
+
+        if (event.target.matches("[data-remove-time]")) {
+          event.target.closest(".time-entry").remove();
+          calculate();
+        }
+
+        if (event.target.matches("[data-add-soldier]")) {
+          const entries = readSoldierEntries();
+          entries.push({ tier: 1, count: 0 });
+          savedState = { ...savedState, soldierEntries: entries };
+          document.querySelector(".soldier-inputs").innerHTML = entries
+            .map(makeSoldierEntry)
+            .join("");
+          calculate();
+        }
+
+        if (event.target.matches("[data-remove-soldier]")) {
+          event.target.closest(".soldier-entry").remove();
+          calculate();
+        }
+
+        if (event.target.matches("[data-add-equipment]")) {
+          const entries = readEquipmentEntries();
+          entries.push({ option: 0, count: 0 });
+          savedState = { ...savedState, equipmentEntries: entries };
+          document.querySelector(".equipment-inputs").innerHTML = entries
+            .map(makeEquipmentEntry)
+            .join("");
+          calculate();
+        }
+
+        if (event.target.matches("[data-remove-equipment]")) {
+          event.target.closest(".equipment-entry").remove();
+          calculate();
+        }
+
+        if (event.target.matches("[data-add-pet-breakthrough]")) {
+          const entries = readPetBreakthroughEntries();
+          entries.push({ option: 0, count: 0 });
+          savedState = { ...savedState, petBreakthroughEntries: entries };
+          document.querySelector(".pet-breakthrough-inputs").innerHTML = entries
+            .map(makePetBreakthroughEntry)
+            .join("");
+          calculate();
+        }
+
+        if (event.target.matches("[data-remove-pet-breakthrough]")) {
+          event.target.closest(".pet-breakthrough-entry").remove();
+          calculate();
+        }
+      });
+      showAllButton.addEventListener("click", () => {
+        showSelectedOnly = false;
+        showAllButton.classList.add("active");
+        showSelectedButton.classList.remove("active");
+        calculate();
+      });
+      showSelectedButton.addEventListener("click", () => {
+        showSelectedOnly = true;
+        showSelectedButton.classList.add("active");
+        showAllButton.classList.remove("active");
+        calculate();
+      });
+      resetButton.addEventListener("click", () => {
+        const pinnedItems = Array.from(
+          document.querySelectorAll("[data-pin-item]:checked"),
+        ).map((input) => input.dataset.pinItem);
+        const scoreState = {
+          pinnedItems,
+          currentScore: Math.max(
+            0,
+            Math.floor(parseNumeric(currentScore.value)),
+          ),
+          competitorScore: Math.max(
+            0,
+            Math.floor(parseNumeric(competitorScore.value)),
+          ),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(scoreState));
+        renderRows(scoreState);
+        calculate();
+      });
+
+      initialize();
+    </script>
+  </body>
+</html>

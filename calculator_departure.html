@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>출발 계산기 | 미소의세상</title>
+    <link rel="stylesheet" href="calculator_departure.css" />
+  </head>
+  <body>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a class="brand" href="index.html" aria-label="Kingshot 홈"
+        >Kingshot<span>+</span></a
+      >
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="메뉴 열기"
+        aria-expanded="false"
+      >
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links">
+        <a href="calculator_gg.html">지고 계산기</a>
+        <a href="calculator_departure.html">출발 계산기</a>
+        <a href="calculator_server_prep.html">서버준비전</a>
+        <a href="calculator_alliance_duel.html">연맹결투</a>
+        <a href="calculator_free.html">자유계산기</a>
+      </div>
+    </nav>
+
+    <main class="page">
+      <a class="back-link" href="index.html">← 메인으로</a>
+      <header class="page-header">
+        <p class="eyebrow">UTC TIMING TOOL</p>
+        <h1>출발 계산기</h1>
+        <p>
+          UTC 현재 시각을 기준으로 함께 도착하기 위한 출발 시간을 계산합니다.
+        </p>
+        <div class="utc-clock">
+          현재 UTC <strong id="utcClock">--:--:--</strong>
+        </div>
+      </header>
+
+      <section class="calculator-panel">
+        <div class="section-top">
+          <div>
+            <p class="section-kicker">RALLY DEPARTURE</p>
+            <h2>집결 출발 계산기</h2>
+          </div>
+          <div class="section-actions">
+            <button class="copy-button" id="copyRallyButton" type="button">
+              출발 시간 복사
+            </button>
+            <button class="reset-button" id="resetRallyButton" type="button">
+              초기화
+            </button>
+            <button class="add-button" id="addRallyButton" type="button">
+              + 행 추가
+            </button>
+          </div>
+        </div>
+        <p class="section-description">
+          가장 긴 행군 시간과 딜레이를 기준으로 공동 도착 시각을 정합니다.
+        </p>
+        <div class="rally-settings">
+          <label>
+            <span>공통 딜레이</span>
+            <input
+              class="delay-input"
+              id="commonDelayMinutes"
+              type="number"
+              min="0"
+              step="1"
+              value="0"
+              aria-label="공통 딜레이 분"
+            />
+            <span>분</span>
+            <input
+              class="delay-input"
+              id="commonDelaySeconds"
+              type="number"
+              min="0"
+              step="5"
+              value="0"
+              aria-label="공통 딜레이 초"
+            />
+            <span>초</span>
+          </label>
+          <div class="arrival-settings">
+            <label>
+              <span>집결 시간</span>
+              <input
+                class="delay-input"
+                id="rallyWaitMinutes"
+                type="number"
+                min="0"
+                step="1"
+                value="0"
+                aria-label="집결 시간 분"
+              />
+              <span>분</span>
+            </label>
+            <div class="summary-box">
+              공동 도착 시각 <strong id="rallyArrivalTime">--:--:--</strong>
+            </div>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>닉네임</th>
+                <th>행군시간</th>
+                <th>출발시간 (UTC)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="rallyRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="calculator-panel">
+        <div class="section-top">
+          <div>
+            <p class="section-kicker">REFUEL TIMING</p>
+            <h2>주유 계산기</h2>
+          </div>
+          <div class="section-actions">
+            <button class="reset-button" id="resetRefuelButton" type="button">
+              초기화
+            </button>
+            <button class="add-button" id="addRefuelButton" type="button">
+              + 행 추가
+            </button>
+          </div>
+        </div>
+        <p class="section-description">
+          적 도착 시각과 내 주유 출발 시각을 UTC 기준으로 계산합니다.
+        </p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>적군 닉네임</th>
+                <th>적군 행군시간</th>
+                <th>적군 남은 집결시간</th>
+                <th>나의 행군시간</th>
+                <th>적 도착시간 (UTC)</th>
+                <th>내 주유 출발시간 (UTC)</th>
+                <th>멈춤</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="refuelRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>1서버 미소의세상</span>
+      <i>·</i>
+      <strong>KINGSHOT</strong>
+    </footer>
+
+    <script src="nav.js"></script>
+    <script src="calculator_departure.js"></script>
+  </body>
+</html>
