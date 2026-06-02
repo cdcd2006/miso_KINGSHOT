@@ -98,6 +98,67 @@
         <strong>KINGSHOT</strong>
       </footer>
     </main>
+    <aside class="schedule-widget">
+      <section
+        class="schedule-panel"
+        id="schedulePanel"
+        aria-label="킹샷 일정 달력"
+        aria-hidden="true"
+      >
+        <header class="schedule-header">
+          <div>
+            <p>KINGSHOT SCHEDULE</p>
+            <h2 id="scheduleTitle">일정 달력</h2>
+          </div>
+          <button class="schedule-close" type="button" aria-label="달력 닫기">
+            ×
+          </button>
+        </header>
+        <div class="schedule-toolbar">
+          <button
+            class="schedule-arrow"
+            type="button"
+            data-schedule-action="prev"
+            aria-label="이전 기간"
+          >
+            ‹
+          </button>
+          <button
+            class="schedule-today"
+            type="button"
+            data-schedule-action="today"
+          >
+            현재 이벤트
+          </button>
+          <button
+            class="schedule-arrow"
+            type="button"
+            data-schedule-action="next"
+            aria-label="다음 기간"
+          >
+            ›
+          </button>
+          <button
+            class="schedule-view-toggle"
+            type="button"
+            data-schedule-action="toggle"
+          >
+            월 전체 보기
+          </button>
+        </div>
+        <div class="schedule-grid" id="scheduleGrid"></div>
+      </section>
+      <button
+        class="schedule-launcher"
+        type="button"
+        aria-label="일정 달력 열기"
+        aria-expanded="false"
+        aria-controls="schedulePanel"
+      >
+        <img src="schedule.png" alt="" />
+      </button>
+    </aside>
     <script src="nav.js?v=20260602-1"></script>
+    <script src="schedule.js?v=20260603-1"></script>
   </body>
 </html>
