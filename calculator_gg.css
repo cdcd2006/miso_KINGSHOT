@@ -1309,14 +1309,20 @@ h1 {
 }
 
 .view-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
   border: 1px solid rgba(161, 105, 53, 0.36);
   background: #fffaf4;
   color: #714b2d;
+  line-height: 1;
   box-shadow: 0 2px 5px rgba(93, 52, 18, 0.08);
 }
 
 .selected-check-icon {
   display: inline-grid;
+  flex: none;
   width: 16px;
   height: 16px;
   margin-right: 4px;
@@ -1342,6 +1348,47 @@ h1 {
   background: linear-gradient(#d85a3d, #bd3f28);
   color: #fffaf1;
   box-shadow: 0 2px 6px rgba(167, 61, 34, 0.28);
+}
+
+.stage-view {
+  position: relative;
+}
+
+.stage-menu {
+  position: absolute;
+  z-index: 12;
+  top: calc(100% + 7px);
+  left: 0;
+  display: grid;
+  width: 112px;
+  overflow: hidden;
+  border: 1px solid rgba(161, 105, 53, 0.36);
+  border-radius: 10px;
+  background: #fffaf3;
+  padding: 5px;
+  box-shadow: 0 8px 18px rgba(73, 37, 13, 0.2);
+}
+
+.stage-menu[hidden] {
+  display: none;
+}
+
+.stage-menu button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #714b2d;
+  padding: 7px 9px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.stage-menu button:hover,
+.stage-menu button.active {
+  background: rgba(216, 160, 87, 0.2);
+  color: #b54b2f;
 }
 
 table {

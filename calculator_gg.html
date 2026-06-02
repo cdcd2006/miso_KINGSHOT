@@ -72,6 +72,25 @@
           <button class="view-toggle active" id="showAllButton" type="button">
             전체 보기
           </button>
+          <div class="stage-view">
+            <button
+              class="view-toggle"
+              id="showStageButton"
+              type="button"
+              aria-expanded="false"
+            >
+              단계별 보기
+            </button>
+            <div class="stage-menu" id="stageMenu" hidden>
+              <button type="button" data-stage="1">1단계</button>
+              <button type="button" data-stage="2">2단계</button>
+              <button type="button" data-stage="3">3단계</button>
+              <button type="button" data-stage="4">4단계</button>
+              <button type="button" data-stage="5">5단계</button>
+              <button type="button" data-stage="6">6단계</button>
+              <button type="button" data-stage="7">7단계</button>
+            </div>
+          </div>
           <button class="view-toggle" id="showSelectedButton" type="button">
             <span class="selected-check-icon" aria-hidden="true">✓</span>
             체크 항목만 보기
@@ -198,6 +217,60 @@
         { id: "soldierTraining", name: "병사 훈련", isSoldier: true },
         { id: "other", name: "기타", isCustom: true },
       ];
+      const STAGE_ITEMS = {
+        1: ["pureGold", "goldPiece", "tempering", "speedup", "gem"],
+        2: [
+          "pureGold",
+          "goldPiece",
+          "tempering",
+          "masterBadge",
+          "masterManuscript",
+          "speedup",
+          "roulette",
+          "rareShard",
+          "purpleShard",
+          "yellowShard",
+          "hammer",
+          "component",
+          "mithril",
+        ],
+        3: [
+          "petBreakthrough",
+          "advancedTraining",
+          "normalTraining",
+          "masterBadge",
+          "masterManuscript",
+          "gem",
+          "roulette",
+          "rareShard",
+          "purpleShard",
+          "yellowShard",
+        ],
+        4: ["gem", "hammer", "component", "mithril", "soldierTraining"],
+        5: [
+          "hammer",
+          "component",
+          "mithril",
+          "pureGold",
+          "goldPiece",
+          "tempering",
+          "speedup",
+        ],
+        6: ["equipment", "soldierTraining"],
+        7: [
+          "petBreakthrough",
+          "advancedTraining",
+          "normalTraining",
+          "pureGold",
+          "goldPiece",
+          "tempering",
+          "speedup",
+          "equipment",
+          "rareShard",
+          "purpleShard",
+          "yellowShard",
+        ],
+      };
 
       const rows = document.querySelector("#scoreRows");
       const currentScore = document.querySelector("#currentScore");
@@ -206,9 +279,24 @@
       const comparison = document.querySelector("#comparison");
       const resetButton = document.querySelector("#resetButton");
       const showAllButton = document.querySelector("#showAllButton");
+      const showStageButton = document.querySelector("#showStageButton");
+      const stageMenu = document.querySelector("#stageMenu");
       const showSelectedButton = document.querySelector("#showSelectedButton");
       const numberFormat = new Intl.NumberFormat("ko-KR");
       let showSelectedOnly = false;
+
+      function closeStageMenu() {
+        stageMenu.hidden = true;
+        showStageButton.setAttribute("aria-expanded", "false");
+      }
+
+      function clearStageView() {
+        closeStageMenu();
+        showStageButton.classList.remove("active");
+        stageMenu.querySelectorAll("[data-stage]").forEach((button) => {
+          button.classList.remove("active");
+        });
+      }
 
       function parseNumeric(value) {
         return Math.max(0, Number(String(value).replace(/[^0-9]/g, "")) || 0);
@@ -800,15 +888,42 @@
       });
       showAllButton.addEventListener("click", () => {
         showSelectedOnly = false;
+        clearStageView();
         showAllButton.classList.add("active");
         showSelectedButton.classList.remove("active");
         calculate();
       });
+      showStageButton.addEventListener("click", () => {
+        const willOpen = stageMenu.hidden;
+        stageMenu.hidden = !willOpen;
+        showStageButton.setAttribute("aria-expanded", String(willOpen));
+      });
+      stageMenu.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-stage]");
+        if (!button) return;
+        const selectedItems = new Set(STAGE_ITEMS[button.dataset.stage]);
+        document.querySelectorAll("[data-pin-item]").forEach((input) => {
+          input.checked = selectedItems.has(input.dataset.pinItem);
+        });
+        showSelectedOnly = true;
+        showAllButton.classList.remove("active");
+        showSelectedButton.classList.remove("active");
+        showStageButton.classList.add("active");
+        stageMenu.querySelectorAll("[data-stage]").forEach((stageButton) => {
+          stageButton.classList.toggle("active", stageButton === button);
+        });
+        closeStageMenu();
+        calculate();
+      });
       showSelectedButton.addEventListener("click", () => {
         showSelectedOnly = true;
+        clearStageView();
         showSelectedButton.classList.add("active");
         showAllButton.classList.remove("active");
         calculate();
+      });
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".stage-view")) closeStageMenu();
       });
       resetButton.addEventListener("click", () => {
         const pinnedItems = Array.from(
