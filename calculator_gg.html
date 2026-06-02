@@ -8,12 +8,19 @@
   </head>
   <body>
     <nav class="top-nav" aria-label="주요 메뉴">
-      <a class="brand" href="index.html" aria-label="Kingshot 홈">Kingshot<span>+</span></a>
-      <button class="nav-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
+      <a class="brand" href="index.html" aria-label="Kingshot 홈"
+        >Kingshot<span>+</span></a
+      >
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="메뉴 열기"
+        aria-expanded="false"
+      >
         <span></span><span></span><span></span>
       </button>
       <div class="nav-links">
-        <a href="calculator_gg.html">지고 계산기</a>
+        <a href="calculator_gg.html">지고의영주</a>
         <a href="calculator_departure.html">출발 계산기</a>
         <a href="calculator_server_prep.html">서버준비전</a>
         <a href="calculator_alliance_duel.html">연맹결투</a>
@@ -21,10 +28,14 @@
       </div>
     </nav>
     <main class="page">
-      <h1>지고의 영주 점수 계산기</h1>
-      <p class="intro">
-        현재 점수와 보유 아이템 수량을 입력하면 예상 총점을 바로 계산합니다.
-      </p>
+      <a class="back-link" href="index.html">← 메인으로</a>
+      <header class="page-header">
+        <p class="eyebrow">JIGO SCORE CALCULATOR</p>
+        <h1>지고의 영주 계산기</h1>
+        <p>
+          현재 점수와 보유 아이템 수량을 입력하면 예상 총점을 바로 계산합니다.
+        </p>
+      </header>
 
       <section class="calculator" aria-label="지고 점수 계산기">
         <header class="score-header">
@@ -62,6 +73,7 @@
             전체 보기
           </button>
           <button class="view-toggle" id="showSelectedButton" type="button">
+            <span class="selected-check-icon" aria-hidden="true">✓</span>
             체크 항목만 보기
           </button>
           <button class="reset" id="resetButton" type="button">초기화</button>
@@ -83,7 +95,27 @@
         </div>
 
         <footer class="footer">
-          <p>입력값은 브라우저에 자동으로 저장됩니다.</p>
+          <p>
+            입력값은 브라우저에 자동으로 저장됩니다.
+            <span class="storage-help">
+              <button
+                class="storage-help-button"
+                type="button"
+                aria-label="자동 저장 안내"
+              >
+                !
+              </button>
+              <span class="storage-tooltip" role="tooltip">
+                <span>같은 기기, 같은 브라우저에서 다시 열면 복원됩니다.</span>
+                <span>다른 컴퓨터나 다른 브라우저에는 공유되지 않습니다.</span>
+                <span
+                  >시크릿 모드 종료, 브라우저 데이터 삭제 시 사라질 수
+                  있습니다.</span
+                >
+                <span>서버로 전송되지는 않습니다.</span>
+              </span>
+            </span>
+          </p>
         </footer>
       </section>
     </main>

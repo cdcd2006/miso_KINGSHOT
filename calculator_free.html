@@ -8,32 +8,130 @@
   </head>
   <body>
     <nav class="top-nav" aria-label="주요 메뉴">
-      <a class="brand" href="index.html" aria-label="Kingshot 홈">Kingshot<span>+</span></a>
-      <button class="nav-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
+      <a class="brand" href="index.html" aria-label="Kingshot 홈"
+        >Kingshot<span>+</span></a
+      >
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="메뉴 열기"
+        aria-expanded="false"
+      >
         <span></span><span></span><span></span>
       </button>
       <div class="nav-links">
-        <a href="calculator_gg.html">지고 계산기</a>
+        <a href="calculator_gg.html">지고의영주</a>
         <a href="calculator_departure.html">출발 계산기</a>
         <a href="calculator_server_prep.html">서버준비전</a>
         <a href="calculator_alliance_duel.html">연맹결투</a>
         <a href="calculator_free.html">자유계산기</a>
       </div>
     </nav>
+
     <main class="page">
       <a class="back-link" href="index.html">← 메인으로</a>
-      <section class="panel">
-        <p class="eyebrow">FREE CALCULATOR</p>
-        <h1>자유계산기</h1>
-        <p class="description">자유계산기 페이지를 준비하고 있습니다.</p>
-        <div class="status">COMING SOON</div>
+      <header class="page-header">
+        <p class="eyebrow">FREE SCORE CALCULATOR</p>
+        <h1>자유 점수 계산기</h1>
+        <p>
+          아이템 이름과 포인트, 보유 수량을 직접 입력하면 예상 총점을 바로
+          계산합니다.
+        </p>
+      </header>
+
+      <section class="calculator" aria-label="자유 점수 계산기">
+        <header class="score-header">
+          <div class="score-inputs">
+            <label>
+              <span class="score-label">현재 점수</span>
+              <input
+                class="current-score"
+                id="currentScore"
+                type="text"
+                inputmode="numeric"
+                value="0"
+              />
+            </label>
+            <label>
+              <span class="score-label">경쟁자 점수</span>
+              <input
+                class="current-score"
+                id="competitorScore"
+                type="text"
+                inputmode="numeric"
+                value="0"
+              />
+            </label>
+          </div>
+          <div class="result" aria-live="polite">
+            <span class="result-label">예상 총점</span>
+            <strong class="total" id="totalScore">0</strong>
+            <span class="comparison" id="comparison">경쟁자와 동점입니다.</span>
+          </div>
+        </header>
+
+        <div class="view-controls">
+          <button class="view-toggle active" id="showAllButton" type="button">
+            전체 보기
+          </button>
+          <button class="view-toggle" id="showSelectedButton" type="button">
+            <span class="selected-check-icon" aria-hidden="true">✓</span>
+            체크 항목만 보기
+          </button>
+          <button class="add-row-button" id="addRowButton" type="button">
+            + 행 추가
+          </button>
+          <button class="reset" id="resetButton" type="button">초기화</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">아이템</th>
+                <th scope="col">포인트</th>
+                <th scope="col">개수</th>
+                <th scope="col">추가 점수</th>
+                <th scope="col">누적 점수</th>
+              </tr>
+            </thead>
+            <tbody id="scoreRows"></tbody>
+          </table>
+        </div>
+
+        <footer class="footer">
+          <p>
+            입력값은 브라우저에 자동으로 저장됩니다.
+            <span class="storage-help">
+              <button
+                class="storage-help-button"
+                type="button"
+                aria-label="자동 저장 안내"
+              >
+                !
+              </button>
+              <span class="storage-tooltip" role="tooltip">
+                <span>같은 기기, 같은 브라우저에서 다시 열면 복원됩니다.</span>
+                <span>다른 컴퓨터나 다른 브라우저에는 공유되지 않습니다.</span>
+                <span
+                  >시크릿 모드 종료, 브라우저 데이터 삭제 시 사라질 수
+                  있습니다.</span
+                >
+                <span>서버로 전송되지는 않습니다.</span>
+              </span>
+            </span>
+          </p>
+        </footer>
       </section>
     </main>
+
     <footer class="site-footer">
       <span>1서버 미소의세상</span>
       <i>·</i>
       <strong>KINGSHOT</strong>
     </footer>
+
     <script src="nav.js"></script>
+    <script src="calculator_free.js"></script>
   </body>
 </html>

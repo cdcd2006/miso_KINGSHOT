@@ -1,1 +1,70 @@
-@import url("calculator_departure.css");
+@import url("calculator_gg.css");
+
+.free-item-editor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.free-item-name {
+  width: 132px;
+  min-width: 0;
+  border: 1px solid rgba(177, 117, 58, 0.38);
+  border-radius: 7px;
+  background: rgba(255, 252, 247, 0.92);
+  color: #4a2a16;
+  padding: 7px 8px;
+  font: inherit;
+  outline: none;
+}
+
+.free-item-name:focus {
+  border-color: #c38640;
+  box-shadow: 0 0 0 3px rgba(198, 134, 64, 0.16);
+}
+
+.free-remove-button,
+.add-row-button {
+  cursor: pointer;
+  border: 1px solid rgba(183, 120, 45, 0.46);
+  border-radius: 999px;
+  background: #fffaf3;
+  color: #a56828;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.free-remove-button {
+  flex: none;
+  border-color: rgba(207, 61, 45, 0.34);
+  color: #c04434;
+  padding: 5px 8px;
+}
+
+.free-remove-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+@media (max-width: 560px) {
+  .view-controls {
+    flex-wrap: wrap;
+  }
+
+  .free-item-editor {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .free-item-name {
+    width: min(100%, 124px);
+    padding: 5px 6px;
+    font-size: 11px;
+  }
+
+  .free-remove-button {
+    padding: 3px 7px;
+    font-size: 10px;
+  }
+}

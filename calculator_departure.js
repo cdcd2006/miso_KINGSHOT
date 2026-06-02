@@ -17,6 +17,29 @@ const rallyArrivalTime = document.querySelector("#rallyArrivalTime");
 const commonDelayMinutes = document.querySelector("#commonDelayMinutes");
 const commonDelaySeconds = document.querySelector("#commonDelaySeconds");
 const rallyWaitMinutes = document.querySelector("#rallyWaitMinutes");
+let baseInternetTime;
+let baseLocalTime;
+
+async function initInternetTime() {
+  try {
+    const response = await fetch("https://worldtimeapi.org/api/timezone/Etc/UTC");
+    if (!response.ok) throw new Error("인터넷 UTC 시간을 불러오지 못했습니다.");
+    const data = await response.json();
+    baseInternetTime = new Date(data.utc_datetime).getTime();
+    baseLocalTime = Date.now();
+    calculate();
+  } catch {
+    // 인터넷 시간 요청이 실패하면 기존 브라우저 시간을 사용합니다.
+  }
+}
+
+function getCurrentTime() {
+  if (baseInternetTime === undefined || baseLocalTime === undefined) {
+    return new Date();
+  }
+
+  return new Date(baseInternetTime + (Date.now() - baseLocalTime));
+}
 
 function makeOrderOptions(selected = ORDER_OPTIONS[0]) {
   return ORDER_OPTIONS.map(
@@ -82,7 +105,7 @@ function addSeconds(date, seconds) {
 }
 
 function calculate() {
-  const now = new Date();
+  const now = getCurrentTime();
   utcClock.textContent = formatUtc(now);
   const rallyItems = Array.from(rallyRows.querySelectorAll("tr"));
   const delay = parseNumber(commonDelayMinutes) * 60 + parseNumber(commonDelaySeconds);
@@ -209,4 +232,5 @@ document.querySelector("#copyRallyButton").addEventListener("click", async () =>
 
 addRows(rallyRows, makeRallyRow, 3);
 addRows(refuelRows, makeRefuelRow, 3);
+initInternetTime();
 setInterval(calculate, 1000);

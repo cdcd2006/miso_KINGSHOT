@@ -234,6 +234,39 @@ h2 {
   font-size: 13px;
 }
 
+.refuel-guide {
+  margin: 0 20px 16px;
+  border: 1px solid rgba(183, 120, 45, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 250, 241, 0.62);
+  color: #76502f;
+  padding: 13px 15px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.refuel-guide h3 {
+  margin: 0 0 5px;
+  color: #8b5729;
+  font-size: 14px;
+}
+
+.refuel-guide ol {
+  margin: 0;
+  padding-left: 19px;
+}
+
+.refuel-guide strong {
+  color: var(--red);
+}
+
+.guide-example {
+  display: grid;
+  margin-top: 10px;
+  border-top: 1px solid rgba(183, 120, 45, 0.22);
+  padding-top: 8px;
+}
+
 .summary-box {
   margin: 0;
   border: 1px solid rgba(183, 120, 45, 0.28);
