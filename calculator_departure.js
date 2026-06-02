@@ -101,10 +101,18 @@ function getSavedRallyMarchDurations() {
   }
 }
 
-function saveRallyMarchDuration(row) {
+function getRallyMarchDurationKey(row) {
+  const nickname = row.querySelector(".nickname-input").value.trim();
   const order = row.querySelector(".order-select").value;
+  return nickname ? JSON.stringify([nickname, order]) : "";
+}
+
+function saveRallyMarchDuration(row) {
+  const key = getRallyMarchDurationKey(row);
+  if (!key) return;
+
   const durations = getSavedRallyMarchDurations();
-  durations[order] = readDuration(row, "march");
+  durations[key] = readDuration(row, "march");
 
   try {
     localStorage.setItem(RALLY_MARCH_STORAGE_KEY, JSON.stringify(durations));
@@ -114,8 +122,9 @@ function saveRallyMarchDuration(row) {
 }
 
 function restoreRallyMarchDuration(row) {
-  const order = row.querySelector(".order-select").value;
-  const duration = getSavedRallyMarchDurations()[order] || 0;
+  const key = getRallyMarchDurationKey(row);
+  const durations = getSavedRallyMarchDurations();
+  const duration = key && Object.hasOwn(durations, key) ? durations[key] : 0;
   row.querySelector("[data-march-minutes]").value = String(Math.floor(duration / 60));
   row.querySelector("[data-march-seconds]").value = String(duration % 60);
 }
@@ -236,7 +245,7 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("change", (event) => {
-  if (event.target.matches("#rallyRows .order-select")) {
+  if (event.target.matches("#rallyRows .order-select, #rallyRows .nickname-input")) {
     restoreRallyMarchDuration(event.target.closest("tr"));
   }
   calculate();
