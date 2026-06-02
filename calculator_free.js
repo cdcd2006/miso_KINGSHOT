@@ -178,6 +178,16 @@ document.addEventListener("click", (event) => {
   calculate();
 });
 
+document.addEventListener("keydown", (event) => {
+  if (!event.target.matches("[data-quantity]")) return;
+  if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+
+  event.preventDefault();
+  const step = event.key === "ArrowUp" ? 1 : -1;
+  event.target.value = formatNumeric(Math.max(0, parseNumeric(event.target.value) + step));
+  calculate();
+});
+
 document.addEventListener("focusin", (event) => {
   if (
     event.target.matches(".current-score, [data-point], [data-quantity]") &&

@@ -1,14 +1,11 @@
 const ORDER_OPTIONS = [
-  "랠리1",
-  "랠리2",
-  "랠리3",
-  "랠리4",
   "캐슬",
   "동쪽",
   "서쪽",
   "남쪽",
   "북쪽",
 ];
+const RALLY_MARCH_STORAGE_KEY = "kingshot-rally-march-durations";
 
 const rallyRows = document.querySelector("#rallyRows");
 const refuelRows = document.querySelector("#refuelRows");
@@ -96,6 +93,41 @@ function readDuration(row, prefix) {
   return minutes * 60 + seconds;
 }
 
+function getSavedRallyMarchDurations() {
+  try {
+    return JSON.parse(localStorage.getItem(RALLY_MARCH_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveRallyMarchDuration(row) {
+  const order = row.querySelector(".order-select").value;
+  const durations = getSavedRallyMarchDurations();
+  durations[order] = readDuration(row, "march");
+
+  try {
+    localStorage.setItem(RALLY_MARCH_STORAGE_KEY, JSON.stringify(durations));
+  } catch {
+    // Storage can be unavailable in some private browsing environments.
+  }
+}
+
+function restoreRallyMarchDuration(row) {
+  const order = row.querySelector(".order-select").value;
+  const duration = getSavedRallyMarchDurations()[order] || 0;
+  row.querySelector("[data-march-minutes]").value = String(Math.floor(duration / 60));
+  row.querySelector("[data-march-seconds]").value = String(duration % 60);
+}
+
+function clearSavedRallyMarchDurations() {
+  try {
+    localStorage.removeItem(RALLY_MARCH_STORAGE_KEY);
+  } catch {
+    // Storage can be unavailable in some private browsing environments.
+  }
+}
+
 function formatUtc(date) {
   return date.toISOString().slice(11, 19);
 }
@@ -116,9 +148,9 @@ function calculate() {
   rallyArrivalTime.textContent = formatUtc(displayedArrival);
 
   rallyItems.forEach((row, index) => {
-    row.querySelector("[data-rally-departure]").textContent = formatUtc(
-      addSeconds(displayedArrival, -rallyWait - marchDurations[index]),
-    );
+    const departure = addSeconds(displayedArrival, -rallyWait - marchDurations[index]);
+    row.dataset.rallyDepartureTime = String(departure.getTime());
+    row.querySelector("[data-rally-departure]").textContent = formatUtc(departure);
   });
 
   Array.from(refuelRows.querySelectorAll("tr")).forEach((row) => {
@@ -134,7 +166,13 @@ function calculate() {
 }
 
 function addRows(container, template, count = 1) {
+  const existingRowCount = container.children.length;
   container.insertAdjacentHTML("beforeend", Array.from({ length: count }, template).join(""));
+  if (container === rallyRows) {
+    Array.from(container.children)
+      .slice(existingRowCount)
+      .forEach(restoreRallyMarchDuration);
+  }
   calculate();
 }
 
@@ -155,6 +193,7 @@ document.querySelector("#resetRallyButton").addEventListener("click", () => {
   commonDelayMinutes.value = "0";
   commonDelaySeconds.value = "0";
   rallyWaitMinutes.value = "0";
+  clearSavedRallyMarchDurations();
   resetRows(rallyRows, makeRallyRow);
 });
 
@@ -189,8 +228,19 @@ document.addEventListener("focusin", (event) => {
   }
 });
 
-document.addEventListener("input", calculate);
-document.addEventListener("change", calculate);
+document.addEventListener("input", (event) => {
+  if (event.target.matches("[data-march-minutes], [data-march-seconds]")) {
+    saveRallyMarchDuration(event.target.closest("tr"));
+  }
+  calculate();
+});
+
+document.addEventListener("change", (event) => {
+  if (event.target.matches("#rallyRows .order-select")) {
+    restoreRallyMarchDuration(event.target.closest("tr"));
+  }
+  calculate();
+});
 
 async function copyText(text) {
   if (navigator.clipboard?.writeText) {
@@ -215,10 +265,16 @@ async function copyText(text) {
 document.querySelector("#copyRallyButton").addEventListener("click", async () => {
   calculate();
   const text = Array.from(rallyRows.querySelectorAll("tr"))
+    .sort(
+      (firstRow, secondRow) =>
+        Number(firstRow.dataset.rallyDepartureTime) -
+        Number(secondRow.dataset.rallyDepartureTime),
+    )
     .map((row) => {
+      const order = row.querySelector(".order-select").value;
       const nickname = row.querySelector(".nickname-input").value.trim() || "닉네임 없음";
       const departure = row.querySelector("[data-rally-departure]").textContent;
-      return `${nickname} 👉 UTC ${departure} 출발`;
+      return `[${order}] ${nickname} 👉 UTC ${departure} 출발`;
     })
     .join("\n");
 
