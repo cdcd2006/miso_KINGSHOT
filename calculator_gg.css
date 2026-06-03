@@ -463,9 +463,9 @@ tbody tr:last-child td {
 }
 
 .pet-breakthrough-select {
-  width: 92px;
+  width: 136px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .footer {
@@ -501,9 +501,13 @@ tbody tr:last-child td {
 }
 
 .view-controls .reset {
-  margin-left: auto;
+  margin-left: 0;
   padding: 8px 12px;
   font-size: 12px;
+}
+
+.view-controls #clearPinsButton {
+  margin-left: auto;
 }
 
 .reset:hover {
@@ -1864,7 +1868,7 @@ th {
   }
 
   .pet-breakthrough-select {
-    width: 76px;
+    width: 118px;
   }
 }
 
