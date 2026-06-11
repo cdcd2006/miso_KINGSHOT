@@ -1,6 +1,6 @@
 const SITE_META = {
-  title: "1서버 미소의세상 · KINGSHOT",
-  description: "1서버 미소의세상 KINGSHOT 계산기 사이트",
+  title: "14서버 미소의세상 · KINGSHOT",
+  description: "14서버 미소의세상 KINGSHOT 계산기 사이트",
   image: "main.jpg",
   favicon: "favicon.jpg",
 };
@@ -27,4 +27,3 @@ ensureMeta("og:type", "website");
 ensureMeta("og:title", SITE_META.title);
 ensureMeta("og:description", SITE_META.description);
 ensureMeta("og:image", SITE_META.image);
-
