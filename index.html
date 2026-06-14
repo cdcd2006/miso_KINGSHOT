@@ -29,7 +29,16 @@
         <div class="portrait-frame">
           <div class="portrait-glow"></div>
           <img src="miso.jpg" alt="미소의세상 대표 이미지" />
-          <span class="portrait-badge">S14</span>
+          <button
+            class="portrait-badge"
+            id="serverRulesOpen"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="serverRulesModal"
+            aria-expanded="false"
+          >
+            S14
+          </button>
         </div>
       </section>
 
@@ -98,6 +107,91 @@
         <strong>KINGSHOT</strong>
       </footer>
     </main>
+    <div class="rules-modal" id="serverRulesModal" hidden>
+      <div class="rules-backdrop" data-rules-close></div>
+      <section
+        class="rules-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="14서버 규칙"
+      >
+        <button
+          class="rules-close"
+          type="button"
+          aria-label="규칙 모달 닫기"
+          data-rules-close
+        >
+          ×
+        </button>
+        <div class="rules-grid" aria-label="14서버 규칙 카드">
+          <article class="rule-card rule-card-featured">
+            <div class="rule-content">
+              <h3>곰 규칙</h3>
+              <p>
+                <strong>1베어</strong> = UTC 12:30,<br />
+                한국시간 9시30분에 시작합니다.
+              </p>
+              <p>
+                🔸 집결원 - 110,000명<br />
+                <span class="rule-note">
+                  (1분이 지난 집결은 병력제한없이 풀병력으로 참여가능)
+                </span>
+              </p>
+              <hr />
+              <p>
+                <strong>2베어</strong> = UTC 13:30,<br />
+                한국시간 10시30에 시작합니다.
+              </p>
+              <p>🔸 집결원 - 병력제한없이 참여가능</p>
+              <div class="rule-group">
+                <h4>&lt;1,2베어 통합규칙&gt;</h4>
+                <p>
+                  집결장 - 최대병력 집결, 2열까지 필수 집결<br />
+                  집결원 영웅 - 첸코, 아마데우스<br />
+                  아마네, 연우, 마르고, 비비안, 아이바<br />
+                  <span class="rule-note">(총 7명)</span>
+                </p>
+              </div>
+            </div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+          <article class="rule-card">
+            <div class="rule-lines" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
     <aside class="schedule-widget">
       <section
         class="schedule-panel"
@@ -160,5 +254,35 @@
     </aside>
     <script src="nav.js?v=20260602-1"></script>
     <script src="schedule.js?v=20260611-1"></script>
+    <script>
+      const serverRulesOpen = document.querySelector("#serverRulesOpen");
+      const serverRulesModal = document.querySelector("#serverRulesModal");
+      const serverRulesCloseButtons =
+        serverRulesModal.querySelectorAll("[data-rules-close]");
+
+      function openServerRules() {
+        serverRulesModal.hidden = false;
+        serverRulesOpen.setAttribute("aria-expanded", "true");
+        document.body.classList.add("rules-open");
+        serverRulesModal.querySelector(".rules-close").focus();
+      }
+
+      function closeServerRules() {
+        serverRulesModal.hidden = true;
+        serverRulesOpen.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("rules-open");
+        serverRulesOpen.focus();
+      }
+
+      serverRulesOpen.addEventListener("click", openServerRules);
+      serverRulesCloseButtons.forEach((button) => {
+        button.addEventListener("click", closeServerRules);
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !serverRulesModal.hidden) {
+          closeServerRules();
+        }
+      });
+    </script>
   </body>
 </html>

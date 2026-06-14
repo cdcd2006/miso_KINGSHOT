@@ -385,7 +385,7 @@
         const options = GEM_MULTIPLIERS.map(
           (_, level) =>
             `<option value="${level}" ${level === entry.level ? "selected" : ""}>레벨 ${level}</option>`,
-        ).join("");
+        ).slice(1).join("");
         return `
           <div class="gem-entry">
             ${index > 0 ? '<button class="entry-remove" data-remove-gem type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
@@ -471,7 +471,7 @@
             ? savedState.gemEntries
             : [
                 {
-                  level: quantity,
+                  level: Math.max(1, quantity),
                   count: Math.max(
                     0,
                     Number(savedState[`${item.id}Count`]) || 0,
@@ -580,7 +580,7 @@
         return Array.from(document.querySelectorAll(".gem-entry")).map(
           (entry) => ({
             level: Math.max(
-              0,
+              1,
               Math.floor(
                 Number(entry.querySelector("[data-gem-level]").value) || 0,
               ),
@@ -866,7 +866,7 @@
 
         if (event.target.matches("[data-add-gem]")) {
           const entries = readGemEntries();
-          entries.push({ level: 0, count: 0 });
+          entries.push({ level: 1, count: 0 });
           savedState = { ...savedState, gemEntries: entries };
           document.querySelector(".gem-entries").innerHTML = entries
             .map(makeGemEntry)
