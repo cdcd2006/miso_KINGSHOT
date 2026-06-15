@@ -276,10 +276,23 @@
         { id: "normalTraining", name: "펫 일반훈련", point: 1150 },
         { id: "petBreakthrough", name: "펫 돌파", isPetBreakthrough: true },
         { id: "soldierTraining", name: "병사 훈련", isSoldier: true },
+        {
+          id: "observatoryInfo",
+          name: "전망대",
+          point: 6000,
+          note: "정보이벤트",
+        },
         { id: "other", name: "기타", isCustom: true },
       ];
       const STAGE_ITEMS = {
-        1: ["gem", "pureGold", "goldPiece", "tempering", "speedup"],
+        1: [
+          "gem",
+          "pureGold",
+          "goldPiece",
+          "tempering",
+          "speedup",
+          "observatoryInfo",
+        ],
         2: [
           "pureGold",
           "goldPiece",
@@ -303,6 +316,7 @@
           "yellowShard",
           "masterManuscript",
           "masterBadge",
+          "observatoryInfo",
         ],
         4: ["gem", "hammer", "component", "soldierTraining", "mithril"],
         5: [
@@ -316,6 +330,7 @@
           "goldPiece",
           "tempering",
           "speedup",
+          "observatoryInfo",
           "mithril",
         ],
       };
@@ -547,9 +562,12 @@
             <td class="item-name">
               <label class="item-pin">
                 <input data-pin-item="${item.id}" type="checkbox" ${isPinned ? "checked" : ""}>
-                <span>${item.name}</span>
+                <span class="item-copy">
+                  <span class="item-title">${item.name}</span>
+                  ${note}
+                </span>
               </label>
-              ${makeAddButton(item)}${note}
+              ${makeAddButton(item)}
             </td>
             <td>${pointCell}</td>
             <td>${makeQuantityControl(item, quantity)}</td>
