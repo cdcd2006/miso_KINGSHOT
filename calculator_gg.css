@@ -367,6 +367,7 @@ tbody tr:last-child td {
 
 .gem-entries,
 .time-inputs,
+.soldier-tier-inputs,
 .soldier-inputs,
 .equipment-inputs,
 .pet-breakthrough-inputs {
@@ -449,6 +450,10 @@ tbody tr:last-child td {
   width: 76px;
 }
 
+.soldier-count-input.soldier-times-input {
+  width: 52px;
+}
+
 .equipment-count-input {
   width: 68px;
 }
@@ -464,6 +469,14 @@ tbody tr:last-child td {
 .soldier-select {
   width: 78px;
   cursor: pointer;
+}
+
+.soldier-tier-inputs {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .equipment-select {

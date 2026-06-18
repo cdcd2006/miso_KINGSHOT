@@ -197,7 +197,7 @@
         16000,
       ];
       const PET_BREAKTHROUGH_POINT = 50;
-      const TRAINING_POINTS = [0, 1, 2, 3, 5, 7, 11, 16, 23, 30, 39, 49];
+      const TRAINING_POINTS = [0, 2, 4, 5, 8, 12, 18, 25, 35, 45, 60, 75];
       const EQUIPMENT_OPTIONS = [
         { name: "고급", score: 1125 },
         { name: "고급 (1성)", score: 1875 },
@@ -436,18 +436,22 @@
         `;
       }
 
-      function makeSoldierEntry(entry, index) {
+      function makeSoldierTierEntry(entry) {
         const options = TRAINING_POINTS.slice(1)
           .map((_, offset) => {
             const tier = offset + 1;
             return `<option value="${tier}" ${tier === entry.tier ? "selected" : ""}>${tier}급</option>`;
           })
           .join("");
+        return `<select class="soldier-select" data-soldier-tier aria-label="병사 훈련 등급">${options}</select>`;
+      }
+
+      function makeSoldierEntry(entry, index) {
         return `
-          <div class="soldier-entry">
+          <div class="soldier-entry" data-soldier-index="${index}">
             ${index > 0 ? '<button class="entry-remove" data-remove-soldier type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
-            <select class="soldier-select" data-soldier-tier aria-label="병사 훈련 등급">${options}</select>
             <label><input class="soldier-count-input" data-soldier-count aria-label="병사 훈련 명수" type="text" inputmode="numeric" value="${formatNumeric(entry.count)}"><span>명</span></label>
+            <label><span>×</span><input class="soldier-count-input soldier-times-input" data-soldier-times aria-label="병사 훈련 횟수" type="text" inputmode="numeric" value="${formatNumeric(entry.times ?? 1)}"><span>번</span></label>
           </div>
         `;
       }
@@ -528,7 +532,7 @@
         if (item.isSoldier) {
           const entries = Array.isArray(savedState.soldierEntries)
             ? savedState.soldierEntries
-            : [{ tier: 1, count: 0 }];
+            : [{ tier: 1, count: 0, times: 1 }];
           return `<div class="soldier-inputs">${entries.map(makeSoldierEntry).join("")}</div>`;
         }
 
@@ -556,10 +560,13 @@
         rows.innerHTML = items
           .map((item) => {
             const quantity = Math.max(0, Number(state[item.id]) || 0);
+            const soldierEntries = Array.isArray(state.soldierEntries)
+              ? state.soldierEntries
+              : [{ tier: 1, count: 0, times: 1 }];
             const pointCell = item.isCustom
               ? `<input class="custom-point-input" data-custom-point aria-label="${item.name} 포인트" type="text" inputmode="numeric" value="${formatNumeric(state.otherPoint || 0)}">`
               : item.isSoldier
-                ? '<span class="variable-point">등급별</span>'
+                ? `<div class="soldier-tier-inputs">${soldierEntries.map(makeSoldierTierEntry).join("")}</div>`
                 : item.isPetBreakthrough
                   ? `<span class="point">${numberFormat.format(PET_BREAKTHROUGH_POINT)}</span>`
                   : `<span class="point">${numberFormat.format(item.point || 0)}</span>`;
@@ -649,18 +656,25 @@
       }
 
       function readSoldierEntries() {
+        const tierInputs = Array.from(
+          document.querySelectorAll("[data-soldier-tier]"),
+        );
         return Array.from(document.querySelectorAll(".soldier-entry")).map(
-          (entry) => ({
+          (entry, index) => ({
             tier: Math.max(
               1,
-              Math.floor(
-                Number(entry.querySelector("[data-soldier-tier]").value) || 1,
-              ),
+              Math.floor(Number(tierInputs[index]?.value) || 1),
             ),
             count: Math.max(
               0,
               Math.floor(
                 parseNumeric(entry.querySelector("[data-soldier-count]").value),
+              ),
+            ),
+            times: Math.max(
+              0,
+              Math.floor(
+                parseNumeric(entry.querySelector("[data-soldier-times]").value),
               ),
             ),
           }),
@@ -767,7 +781,9 @@
           }
           if (item.isSoldier) {
             subtotal = soldierEntries.reduce(
-              (sum, entry) => sum + TRAINING_POINTS[entry.tier] * entry.count,
+              (sum, entry) =>
+                sum +
+                TRAINING_POINTS[entry.tier] * entry.count * entry.times,
               0,
             );
           }
@@ -928,16 +944,29 @@
 
         if (event.target.matches("[data-add-soldier]")) {
           const entries = readSoldierEntries();
-          entries.push({ tier: 1, count: 0 });
+          entries.push({ tier: 1, count: 0, times: 1 });
           savedState = { ...savedState, soldierEntries: entries };
           document.querySelector(".soldier-inputs").innerHTML = entries
             .map(makeSoldierEntry)
+            .join("");
+          document.querySelector(".soldier-tier-inputs").innerHTML = entries
+            .map(makeSoldierTierEntry)
             .join("");
           calculate();
         }
 
         if (event.target.matches("[data-remove-soldier]")) {
-          event.target.closest(".soldier-entry").remove();
+          const index = Number(
+            event.target.closest(".soldier-entry").dataset.soldierIndex,
+          );
+          const entries = readSoldierEntries();
+          entries.splice(index, 1);
+          document.querySelector(".soldier-inputs").innerHTML = entries
+            .map(makeSoldierEntry)
+            .join("");
+          document.querySelector(".soldier-tier-inputs").innerHTML = entries
+            .map(makeSoldierTierEntry)
+            .join("");
           calculate();
         }
 
