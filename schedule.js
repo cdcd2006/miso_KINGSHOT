@@ -241,6 +241,81 @@
         items: [],
       },
     ],
+    "2026-06-22": [
+      {
+        title: "🐎 연맹결투",
+        items: ["순금", "가속", "채집", "거장"],
+      },
+      {
+        title: "🦾 군비 경쟁 1",
+        items: ["순금", "장비", "파편", "거장", "가속"],
+      },
+    ],
+    "2026-06-23": [
+      {
+        title: "🐎 연맹결투",
+        items: ["파편", "순금", "가속", "전망대", "거장"],
+      },
+      {
+        title: "🦾 군비 경쟁 1",
+        items: ["순금", "장비", "파편", "거장", "가속"],
+      },
+      {
+        title: "🎣 낚시",
+        items: [],
+      },
+    ],
+    "2026-06-24": [
+      {
+        title: "🐎 연맹결투",
+        items: ["보석", "펫", "채집"],
+      },
+      {
+        title: "📄 사관의 계획 1",
+        items: ["보석", "망치", "부속품", "미스릴", "훈련"],
+      },
+      {
+        title: "🎣 낚시",
+        items: [],
+      },
+    ],
+    "2026-06-25": [
+      {
+        title: "🐎 연맹결투",
+        items: ["보석", "망치", "부속품", "미스릴", "훈련", "전망대"],
+      },
+      {
+        title: "📄 사관의 계획 1",
+        items: ["보석", "망치", "부속품", "미스릴", "훈련"],
+      },
+      {
+        title: "🎣 낚시",
+        items: [],
+      },
+    ],
+    "2026-06-26": [
+      {
+        title: "🐎 연맹결투",
+        items: ["장비", "순금", "가속", "고기"],
+      },
+    ],
+    "2026-06-27": [
+      {
+        title: "🐎 연맹결투",
+        items: [
+          "장비",
+          "보석",
+          "망치",
+          "부속품",
+          "미스릴",
+          "파편",
+          "펫",
+          "순금",
+          "가속",
+          "고기",
+        ],
+      },
+    ],
   };
   let cursor = getGameDay();
   let view = "week";
@@ -294,13 +369,20 @@
     cell.className = "schedule-day";
     if (outsideMonth) cell.classList.add("is-outside");
     if (isSameDay(date, getGameDay())) cell.classList.add("is-today");
+    const dayEvents = events[toKey(date)] || [];
+    const itemCounts = dayEvents.reduce((counts, event) => {
+      new Set(event.items).forEach((item) => {
+        counts.set(item, (counts.get(item) || 0) + 1);
+      });
+      return counts;
+    }, new Map());
 
     const dateLabel = document.createElement("span");
     dateLabel.className = "schedule-date";
     dateLabel.textContent = `${date.getMonth() + 1}/${date.getDate()} (${dayNames[date.getDay()]})`;
     cell.append(dateLabel);
 
-    (events[toKey(date)] || []).forEach((event) => {
+    dayEvents.forEach((event) => {
       const card = document.createElement("section");
       card.className = "schedule-event";
 
@@ -315,6 +397,10 @@
         event.items.forEach((eventItem) => {
           const item = document.createElement("span");
           item.textContent = eventItem;
+          if ((itemCounts.get(eventItem) || 0) > 1) {
+            item.classList.add("is-duplicate");
+            item.title = "같은 날 다른 이벤트와 겹치는 항목";
+          }
           itemList.append(item);
         });
         card.append(itemList);

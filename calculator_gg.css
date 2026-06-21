@@ -485,10 +485,20 @@ tbody tr:last-child td {
   font-size: 13px;
 }
 
+.equipment-select.meat-use-select {
+  width: 210px;
+}
+
 .pet-breakthrough-select {
   width: 136px;
   cursor: pointer;
   font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .equipment-select.meat-use-select {
+    width: 185px;
+  }
 }
 
 .footer {
@@ -1735,6 +1745,55 @@ th {
 }
 
 @media (max-width: 560px) {
+  .view-controls {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .view-controls > #showAllButton,
+  .view-controls > .stage-view,
+  .view-controls > #showSelectedButton {
+    grid-column: span 2;
+    min-width: 0;
+  }
+
+  .view-controls > #clearPinsButton,
+  .view-controls > #resetButton {
+    grid-column: span 3;
+    width: 100%;
+  }
+
+  .view-controls #clearPinsButton {
+    margin-left: 0;
+  }
+
+  .view-controls .view-toggle,
+  .view-controls .stage-view,
+  .view-controls .stage-view > .view-toggle {
+    width: 100%;
+  }
+
+  .view-controls .view-toggle,
+  .view-controls .reset {
+    padding-right: 6px;
+    padding-left: 6px;
+    white-space: nowrap;
+  }
+
+  #showSelectedButton {
+    font-size: 0;
+  }
+
+  #showSelectedButton::after {
+    content: "체크 보기";
+    font-size: 12px;
+  }
+
+  #showSelectedButton .selected-check-icon {
+    font-size: 12px;
+  }
+
   tbody tr[data-row="other"] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

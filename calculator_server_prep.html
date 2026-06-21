@@ -782,8 +782,7 @@
           if (item.isSoldier) {
             subtotal = soldierEntries.reduce(
               (sum, entry) =>
-                sum +
-                TRAINING_POINTS[entry.tier] * entry.count * entry.times,
+                sum + TRAINING_POINTS[entry.tier] * entry.count * entry.times,
               0,
             );
           }
