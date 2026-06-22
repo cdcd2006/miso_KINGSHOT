@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>계산기</title>
-    <link rel="stylesheet" href="calculator_gg.css" />
+    <link rel="stylesheet" href="calculator_gg.css?v=20260622-10" />
     <link rel="stylesheet" href="schedule.css?v=20260603-1" />
   </head>
   <body>
@@ -247,7 +247,7 @@
         { name: "Lv.100 → Lv.110", score: 17500 },
       ];
       const DEFAULT_SCORE = 0;
-      const STORAGE_KEY = "kingshot-jigo-score-v2";
+      const STORAGE_KEY = "kingshot-server-prep-score-v1";
       const items = [
         { id: "pureGold", name: "순금", point: 2000 },
         { id: "goldPiece", name: "순금조각", point: 1000 },
@@ -425,11 +425,13 @@
       }
 
       function makeTimeEntry(entry, index) {
-        const hours = Math.floor(entry.minutes / 60);
+        const days = Math.floor(entry.minutes / 1440);
+        const hours = Math.floor((entry.minutes % 1440) / 60);
         const minutes = entry.minutes % 60;
         return `
           <div class="time-entry">
             ${index > 0 ? '<button class="entry-remove" data-remove-time type="button">삭제</button>' : '<span class="entry-remove-spacer"></span>'}
+            <label><input class="time-input" data-day aria-label="가속 일" type="text" inputmode="numeric" value="${formatNumeric(days)}"><span>일</span></label>
             <label><input class="time-input" data-hour aria-label="가속 시간" type="text" inputmode="numeric" value="${formatNumeric(hours)}"><span>시간</span></label>
             <label><input class="time-input" data-minute aria-label="가속 분" type="text" inputmode="numeric" value="${formatNumeric(minutes)}"><span>분</span></label>
           </div>
@@ -638,6 +640,13 @@
         return Array.from(document.querySelectorAll(".time-entry")).map(
           (entry) => ({
             minutes:
+              Math.max(
+                0,
+                Math.floor(
+                  parseNumeric(entry.querySelector("[data-day]").value),
+                ),
+              ) *
+                1440 +
               Math.max(
                 0,
                 Math.floor(

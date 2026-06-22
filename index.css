@@ -777,6 +777,14 @@ h1 {
   font-weight: 600;
 }
 
+.schedule-event-items span.is-duplicate {
+  border-color: #e2a184;
+  background: linear-gradient(135deg, #ffe4d5, #f8cdbb);
+  color: #913f2b;
+  box-shadow: 0 2px 5px rgba(177, 91, 61, 0.16);
+  font-weight: 900;
+}
+
 .schedule-grid.is-month .schedule-day {
   min-height: 88px;
 }
