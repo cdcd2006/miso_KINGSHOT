@@ -475,6 +475,37 @@ h1 {
   min-height: 0;
 }
 
+.rule-card-featured .rule-content h3 {
+  margin-bottom: 8px;
+  font-size: 19px;
+}
+
+.rule-card-featured .rule-content p {
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rule-card-featured .rule-note {
+  font-size: 13px;
+}
+
+.rule-card-featured .rule-content hr {
+  margin: 12px 0;
+}
+
+.rule-card-featured .rule-group {
+  padding: 11px 12px 1px;
+}
+
+.rule-card-featured .rule-group h4 {
+  font-size: 14px;
+}
+
+.rule-event-card {
+  min-height: 0;
+}
+
 .rule-content h3 {
   margin: 2px 0 14px;
   color: #4b260f;
@@ -516,6 +547,54 @@ h1 {
 .rule-group h4 {
   margin: 0 0 8px;
   font-size: 15px;
+}
+
+.rule-event {
+  padding-top: 15px;
+  border-top: 1px solid rgba(198, 139, 70, 0.24);
+}
+
+.rule-event:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rule-event + .rule-event {
+  margin-top: 16px;
+}
+
+.rule-event h3 {
+  margin-bottom: 4px;
+  font-size: 19px;
+}
+
+.rule-event .rule-schedule {
+  margin-bottom: 11px;
+  color: #3f2818;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.rule-event p {
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rule-event p:last-child {
+  margin-bottom: 0;
+}
+
+.soldier-infantry {
+  color: #d62020;
+}
+
+.soldier-cavalry {
+  color: #154dff;
+}
+
+.soldier-archer {
+  color: #009d44;
 }
 
 .rule-lines {
