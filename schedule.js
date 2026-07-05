@@ -126,12 +126,12 @@
         items: [],
       },
       {
-        title: "🎈 초대 이민",
-        items: [],
-      },
-      {
         title: "📄 사관의 계획 1",
         items: ["보석", "망치", "부속품", "미스릴", "훈련"],
+      },
+      {
+        title: "🎈 초대 이민",
+        items: [],
       },
     ],
     "2026-06-11": [
@@ -140,12 +140,12 @@
         items: [],
       },
       {
-        title: "🎈 초대 이민",
-        items: [],
-      },
-      {
         title: "📄 사관의 계획 1",
         items: ["보석", "망치", "부속품", "미스릴", "훈련"],
+      },
+      {
+        title: "🎈 초대 이민",
+        items: [],
       },
     ],
     "2026-06-12": [
@@ -154,12 +154,12 @@
         items: [],
       },
       {
-        title: "🎈 자유 이민",
-        items: [],
-      },
-      {
         title: "🦾 군비 경쟁 2",
         items: ["순금", "미스릴", "장비", "망치", "부속품", "가속"],
+      },
+      {
+        title: "🎈 자유 이민",
+        items: [],
       },
     ],
     "2026-06-13": [
@@ -396,6 +396,37 @@
     events[targetDate] = [...copiedEvents, ...(events[targetDate] || [])];
   });
 
+  const cycleStart = new Date(2026, 5, 8);
+  const cycleEnd = new Date(2026, 6, 5);
+  const cycleLength = 28;
+  const additionalEvents = {
+    "2026-07-22": [{ title: "🎈 초대 이민", items: [] }],
+    "2026-07-23": [{ title: "🎈 초대 이민", items: [] }],
+    "2026-07-24": [{ title: "🎈 자유 이민", items: [] }],
+  };
+
+  function getEventsForDate(date) {
+    const dateKey = toKey(date);
+    const additions = additionalEvents[dateKey] || [];
+    const exactEvents = events[dateKey];
+    if (exactEvents) return [...exactEvents, ...additions];
+    if (date <= cycleEnd) return [];
+
+    const daysSinceCycleStart = Math.round(
+      (startOfDay(date) - cycleStart) / (24 * 60 * 60 * 1000),
+    );
+    const cycleDay = addDays(
+      cycleStart,
+      ((daysSinceCycleStart % cycleLength) + cycleLength) % cycleLength,
+    );
+    const repeatedEvents = events[toKey(cycleDay)] || [];
+
+    return [
+      ...repeatedEvents.filter((event) => !event.title.includes("이민")),
+      ...additions,
+    ];
+  }
+
   let cursor = getGameDay();
   let view = "week";
 
@@ -448,7 +479,7 @@
     cell.className = "schedule-day";
     if (outsideMonth) cell.classList.add("is-outside");
     if (isSameDay(date, getGameDay())) cell.classList.add("is-today");
-    const dayEvents = events[toKey(date)] || [];
+    const dayEvents = getEventsForDate(date);
     const itemCounts = dayEvents.reduce((counts, event) => {
       new Set(event.items).forEach((item) => {
         counts.set(item, (counts.get(item) || 0) + 1);
