@@ -381,7 +381,25 @@
     ],
     "2026-07-19": [
       {
-        title: "⚔️ 성검 쟁탈 승급전",
+        title: "⚔️ 성검 리그 승급전 - 1라운드",
+        items: [],
+      },
+    ],
+    "2026-07-26": [
+      {
+        title: "⚔️ 성검 리그 승급전 - 2라운드",
+        items: [],
+      },
+    ],
+    "2026-08-02": [
+      {
+        title: "⚔️ 성검 리그 승급전 - 3라운드",
+        items: [],
+      },
+    ],
+    "2026-08-09": [
+      {
+        title: "⚔️ 성검 리그 승급전 - 4라운드",
         items: [],
       },
     ],
@@ -441,7 +459,10 @@
     const repeatedEvents = events[toKey(cycleDay)] || [];
 
     return [
-      ...repeatedEvents.filter((event) => !event.title.includes("이민")),
+      ...repeatedEvents.filter(
+        (event) =>
+          !event.title.includes("이민") && !event.title.includes("체사레"),
+      ),
       ...additions,
     ];
   }
