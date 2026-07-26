@@ -446,7 +446,12 @@
     const dateKey = toKey(date);
     const additions = additionalEvents[dateKey] || [];
     const exactEvents = events[dateKey] || [];
-    if (date <= cycleEnd) return [...exactEvents, ...additions];
+    if (date <= cycleEnd) {
+      return removeRegularSwordBattleWhenLeagueExists([
+        ...exactEvents,
+        ...additions,
+      ]);
+    }
 
     const daysSinceCycleStart = Math.round(
       (startOfDay(date) - cycleStart) / (24 * 60 * 60 * 1000),
@@ -457,14 +462,23 @@
     );
     const repeatedEvents = events[toKey(cycleDay)] || [];
 
-    return [
+    return removeRegularSwordBattleWhenLeagueExists([
       ...repeatedEvents.filter(
         (event) =>
           !event.title.includes("이민") && !event.title.includes("체사레"),
       ),
       ...exactEvents,
       ...additions,
-    ];
+    ]);
+  }
+
+  function removeRegularSwordBattleWhenLeagueExists(dateEvents) {
+    const hasSwordLeaguePromotion = dateEvents.some((event) =>
+      event.title.includes("성검 리그 승급전"),
+    );
+
+    if (!hasSwordLeaguePromotion) return dateEvents;
+    return dateEvents.filter((event) => !event.title.includes("성검 쟁탈"));
   }
 
   let cursor = getGameDay();
