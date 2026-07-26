@@ -445,9 +445,8 @@
   function getEventsForDate(date) {
     const dateKey = toKey(date);
     const additions = additionalEvents[dateKey] || [];
-    const exactEvents = events[dateKey];
-    if (exactEvents) return [...exactEvents, ...additions];
-    if (date <= cycleEnd) return [];
+    const exactEvents = events[dateKey] || [];
+    if (date <= cycleEnd) return [...exactEvents, ...additions];
 
     const daysSinceCycleStart = Math.round(
       (startOfDay(date) - cycleStart) / (24 * 60 * 60 * 1000),
@@ -463,6 +462,7 @@
         (event) =>
           !event.title.includes("이민") && !event.title.includes("체사레"),
       ),
+      ...exactEvents,
       ...additions,
     ];
   }
