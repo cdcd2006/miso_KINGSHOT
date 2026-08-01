@@ -423,6 +423,7 @@
   const cycleStart = new Date(2026, 5, 8);
   const cycleEnd = new Date(2026, 6, 5);
   const cycleLength = 28;
+  const emperorEndDate = new Date(2026, 7, 2);
   const additionalEvents = {
     "2026-07-09": [
       { title: "⚽ 전설의 교관", items: ["전투력증가", "영웅모집", "파편"] },
@@ -437,9 +438,12 @@
     ],
     "2026-07-14": [{ title: "⚽ 전설의 교관", items: ["채집", "전투력증가"] }],
     "2026-07-15": [{ title: "⚽ 전설의 교관", items: ["장비", "가속"] }],
-    "2026-07-22": [{ title: "🎈 초대 이민", items: [] }],
-    "2026-07-23": [{ title: "🎈 초대 이민", items: [] }],
-    "2026-07-24": [{ title: "🎈 자유 이민", items: [] }],
+    "2026-07-22": [{ title: "🎈 초대 이민(1-235)", items: [] }],
+    "2026-07-23": [{ title: "🎈 초대 이민(1-235)", items: [] }],
+    "2026-07-24": [{ title: "🎈 자유 이민(1-235)", items: [] }],
+    "2026-09-16": [{ title: "🎈 초대 이민(1-115)", items: [] }],
+    "2026-09-17": [{ title: "🎈 초대 이민(1-115)", items: [] }],
+    "2026-09-18": [{ title: "🎈 자유 이민(1-115)", items: [] }],
   };
 
   function getEventsForDate(date) {
@@ -465,7 +469,9 @@
     return removeRegularSwordBattleWhenLeagueExists([
       ...repeatedEvents.filter(
         (event) =>
-          !event.title.includes("이민") && !event.title.includes("체사레"),
+          !event.title.includes("이민") &&
+          !event.title.includes("체사레") &&
+          !(date >= emperorEndDate && event.title.includes("엠페러")),
       ),
       ...exactEvents,
       ...additions,
