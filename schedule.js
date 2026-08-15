@@ -403,6 +403,24 @@
         items: [],
       },
     ],
+    "2026-08-16": [
+      {
+        title: "⚔️ 성검 챔피언십 - 1라운드",
+        items: [],
+      },
+    ],
+    "2026-08-23": [
+      {
+        title: "⚔️ 성검 챔피언십 - 2라운드",
+        items: [],
+      },
+    ],
+    "2026-08-30": [
+      {
+        title: "⚔️ 성검 챔피언십 - 3라운드",
+        items: [],
+      },
+    ],
   };
   [
     ["2026-06-01", "2026-06-29"],
@@ -479,7 +497,7 @@
     );
     const repeatedEvents = events[toKey(cycleDay)] || [];
 
-    return removeRegularSwordBattleWhenLeagueExists([
+    const dateEvents = removeRegularSwordBattleWhenLeagueExists([
       ...repeatedEvents.filter(
         (event) =>
           !event.title.includes("이민") &&
@@ -489,6 +507,11 @@
       ...exactEvents,
       ...additions,
     ]);
+
+    if (dateKey === "2026-08-23") {
+      return dateEvents.filter((event) => !event.title.includes("성검 쟁탈"));
+    }
+    return dateEvents;
   }
 
   function removeRegularSwordBattleWhenLeagueExists(dateEvents) {
